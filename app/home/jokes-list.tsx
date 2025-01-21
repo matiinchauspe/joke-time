@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { JokeTransformed, SortOption } from "@/types";
@@ -11,9 +12,19 @@ import { JokesPagination } from "./components/jokes-pagination";
 
 interface JokesListProps {
   initialJokes: JokeTransformed[];
+  searchParams: {
+    [key: string]: string | string[] | undefined;
+  };
 }
 
-export function JokesList({ initialJokes }: JokesListProps) {
+const ITEMS_PER_PAGE = 5;
+
+export function JokesList({ initialJokes, searchParams }: JokesListProps) {
+  const router = useRouter();
+
+  const page = Number(searchParams.page ?? "1") - 1; // Restamos 1 porque en la URL queremos que empiece en 1
+  const sortBy = (searchParams.sort as SortOption) ?? "newest";
+
   const [jokes, setJokes] = useState<JokeTransformed[]>(() =>
     initialJokes.map((joke) => {
       const { rating, votes } = localJokesStore.getJokeRating(joke.id);
@@ -21,9 +32,6 @@ export function JokesList({ initialJokes }: JokesListProps) {
     })
   );
   const [loading, setLoading] = useState(false);
-  const [sortBy, setSortBy] = useState<SortOption>("newest");
-  const [page, setPage] = useState(0);
-  const jokesPerPage = 5;
 
   const fetchJokes = async () => {
     setLoading(true);
@@ -64,15 +72,25 @@ export function JokesList({ initialJokes }: JokesListProps) {
   });
 
   const paginatedJokes = sortedJokes.slice(
-    page * jokesPerPage,
-    (page + 1) * jokesPerPage
+    page * ITEMS_PER_PAGE,
+    (page + 1) * ITEMS_PER_PAGE
   );
 
-  const totalPages = Math.ceil(jokes.length / jokesPerPage);
+  const totalPages = Math.ceil(jokes.length / ITEMS_PER_PAGE);
 
   return (
     <>
-      <Navbar fetchJokes={fetchJokes} setSortBy={setSortBy} sortBy={sortBy} />
+      <Navbar
+        fetchJokes={fetchJokes}
+        setSortBy={(sort: SortOption) => {
+          const params = new URLSearchParams(
+            searchParams as Record<string, string>
+          );
+          params.set("sort", sort);
+          router.push(`?${params.toString()}`);
+        }}
+        sortBy={sortBy}
+      />
       <div className="mt-4">
         {loading ? (
           <div className="py-8 text-center">Loading jokes...</div>
@@ -82,7 +100,13 @@ export function JokesList({ initialJokes }: JokesListProps) {
         <JokesPagination
           currentPage={page}
           totalPages={totalPages}
-          onPageChange={setPage}
+          onPageChange={(newPage: number) => {
+            const params = new URLSearchParams(
+              searchParams as Record<string, string>
+            );
+            params.set("page", String(newPage + 1));
+            router.push(`?${params.toString()}`);
+          }}
         />
       </div>
     </>
