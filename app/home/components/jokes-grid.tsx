@@ -1,19 +1,19 @@
 "use client";
 
-import { Joke } from "@/types";
+import { JokeTransformed } from "@/types";
 
 import { JokeCard } from "./joke-card";
 
 interface JokesGridProps {
-  jokes: Joke[];
-  onRate: (jokeId: number, rating: number) => void;
+  jokes: JokeTransformed[];
+  onRate: (jokeId: string, rating: number) => void;
 }
 
 export function JokesGrid({ jokes, onRate }: JokesGridProps) {
   return (
     <div className="space-y-4">
-      {jokes.map((joke) => (
-        <JokeCard key={joke.id} joke={joke} onRate={onRate} />
+      {jokes.map((joke, index) => (
+        <JokeCard key={joke.id} joke={joke} onRate={onRate} index={index} />
       ))}
     </div>
   );

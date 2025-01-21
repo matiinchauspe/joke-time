@@ -1,50 +1,62 @@
 "use client";
 
-import { Joke } from "@/types";
+import { motion } from "framer-motion";
+
+import { JokeTransformed } from "@/types";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface JokeCardProps {
-  joke: Joke;
-  onRate: (jokeId: number, rating: number) => void;
+  joke: JokeTransformed;
+  onRate: (jokeId: string, rating: number) => void;
+  index: number;
 }
 
-export function JokeCard({ joke, onRate }: JokeCardProps) {
+export function JokeCard({ joke, onRate, index }: JokeCardProps) {
   return (
-    <Card className="p-6 transition-shadow hover:shadow-lg">
-      <div className="space-y-4">
-        <div>
-          <p className="mb-2 text-lg font-medium">{joke.setup}</p>
-          <p className="font-medium text-purple-600 dark:text-purple-400">
-            {joke.punchline}
-          </p>
-        </div>
-        <div className="flex items-center justify-between border-t pt-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">
-              Rating: {(joke.rating || 0).toFixed(1)} ({joke.votes || 0} votes)
-            </span>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+    >
+      <Card className="overflow-hidden border-none bg-card/50 shadow-xl backdrop-blur">
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <p className="text-xl font-medium leading-relaxed text-foreground">
+                {joke.setup}
+              </p>
+              <p className="font-medium text-primary">{joke.punchline}</p>
+            </div>
+            <div className="flex items-center justify-between border-t border-border/50 pt-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  Rating: {(joke.rating || 0).toFixed(1)} ({joke.votes || 0}{" "}
+                  votes)
+                </span>
+              </div>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Button
+                    key={star}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onRate(joke.id, star)}
+                    className={`hover:text-yellow-500 ${
+                      (joke.rating || 0) >= star
+                        ? "text-yellow-500"
+                        : "text-muted-foreground/30"
+                    }`}
+                  >
+                    <Icons.Star className="h-4 w-4" />
+                  </Button>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Button
-                key={star}
-                variant="ghost"
-                size="sm"
-                onClick={() => onRate(joke.id, star)}
-                className={`p-1 ${
-                  (joke.rating || 0) >= star
-                    ? "text-yellow-500"
-                    : "text-gray-300"
-                }`}
-              >
-                <Icons.Start className="h-4 w-4" />
-              </Button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </Card>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }

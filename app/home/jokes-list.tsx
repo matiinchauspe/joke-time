@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Joke, SortOption } from "@/types";
+import { JokeTransformed, SortOption } from "@/types";
 import { getJokes, localJokesStore } from "@/lib/api";
 import Navbar from "@/components/navbar/navbar";
 
@@ -10,11 +10,11 @@ import { JokesGrid } from "./components/jokes-grid";
 import { JokesPagination } from "./components/jokes-pagination";
 
 interface JokesListProps {
-  initialJokes: Joke[];
+  initialJokes: JokeTransformed[];
 }
 
 export function JokesList({ initialJokes }: JokesListProps) {
-  const [jokes, setJokes] = useState<Joke[]>(() =>
+  const [jokes, setJokes] = useState<JokeTransformed[]>(() =>
     initialJokes.map((joke) => {
       const { rating, votes } = localJokesStore.getJokeRating(joke.id);
       return { ...joke, rating, votes };
@@ -29,7 +29,7 @@ export function JokesList({ initialJokes }: JokesListProps) {
     setLoading(true);
     try {
       const newJokes = await getJokes();
-      const jokesWithRatings = newJokes.map((joke: Joke) => {
+      const jokesWithRatings = newJokes.map((joke: JokeTransformed) => {
         const { rating, votes } = localJokesStore.getJokeRating(joke.id);
         return { ...joke, rating, votes };
       });
@@ -40,7 +40,7 @@ export function JokesList({ initialJokes }: JokesListProps) {
     setLoading(false);
   };
 
-  const handleRate = (jokeId: number, rating: number) => {
+  const handleRate = (jokeId: string, rating: number) => {
     const { rating: newRating, votes } = localJokesStore.rateJoke(
       jokeId,
       rating
@@ -59,7 +59,7 @@ export function JokesList({ initialJokes }: JokesListProps) {
       case "votes":
         return (b.votes || 0) - (a.votes || 0);
       default:
-        return b.id - a.id;
+        return Number(b.id) - Number(a.id);
     }
   });
 
@@ -73,16 +73,18 @@ export function JokesList({ initialJokes }: JokesListProps) {
   return (
     <>
       <Navbar fetchJokes={fetchJokes} setSortBy={setSortBy} sortBy={sortBy} />
-      {loading ? (
-        <div className="py-8 text-center">Loading jokes...</div>
-      ) : (
-        <JokesGrid jokes={paginatedJokes} onRate={handleRate} />
-      )}
-      <JokesPagination
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
+      <div className="mt-4">
+        {loading ? (
+          <div className="py-8 text-center">Loading jokes...</div>
+        ) : (
+          <JokesGrid jokes={paginatedJokes} onRate={handleRate} />
+        )}
+        <JokesPagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
     </>
   );
 }

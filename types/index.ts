@@ -7,4 +7,10 @@ export interface Joke {
   votes?: number;
 }
 
-export type SortOption = 'newest' | 'rating' | 'votes';
+export interface JokeTransformed extends Omit<Joke, "id"> {
+  id: string;
+  rating: number;
+  votes: number;
+}
+
+export type SortOption = "newest" | "rating" | "votes";
