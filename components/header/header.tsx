@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-export function Header() {
+const Header = () => {
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
@@ -27,4 +27,6 @@ export function Header() {
       </motion.p>
     </motion.header>
   );
-}
+};
+
+export default Header;

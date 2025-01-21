@@ -2,8 +2,8 @@ import { Suspense } from "react";
 
 import { getJokes } from "@/lib/api";
 import { Await } from "@/components/await";
+import { Header } from "@/components/header";
 
-import { Header } from "./components/header";
 import { JokesList } from "./jokes-list";
 
 export default async function Home({

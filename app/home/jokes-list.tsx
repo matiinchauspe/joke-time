@@ -4,11 +4,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { JokeTransformed, SortOption } from "@/types";
-import { getJokes, localJokesStore } from "@/lib/api";
+import { getJokes } from "@/lib/api";
+import { localJokesStore } from "@/store";
+import { Grid } from "@/components/grid";
 import Navbar from "@/components/navbar/navbar";
-
-import { JokesGrid } from "./components/jokes-grid";
-import { JokesPagination } from "./components/jokes-pagination";
+import { Pagination } from "@/components/pagination";
 
 interface JokesListProps {
   initialJokes: JokeTransformed[];
@@ -95,9 +95,9 @@ export function JokesList({ initialJokes, searchParams }: JokesListProps) {
         {loading ? (
           <div className="py-8 text-center">Loading jokes...</div>
         ) : (
-          <JokesGrid jokes={paginatedJokes} onRate={handleRate} />
+          <Grid data={paginatedJokes} onRate={handleRate} />
         )}
-        <JokesPagination
+        <Pagination
           currentPage={page}
           totalPages={totalPages}
           onPageChange={(newPage: number) => {
