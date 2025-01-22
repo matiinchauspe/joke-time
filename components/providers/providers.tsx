@@ -1,12 +1,13 @@
 "use client";
 
 import { ReactNode } from "react";
+import { JokesProvider } from "@/context";
 import { ThemeProvider } from "next-themes";
 
-const Providers = ({ children }: { children: ReactNode }) => (
-  <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-    {children}
-  </ThemeProvider>
-);
-
-export default Providers;
+export default function Providers({ children }: { children: ReactNode }) {
+  return (
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <JokesProvider>{children}</JokesProvider>
+    </ThemeProvider>
+  );
+}
