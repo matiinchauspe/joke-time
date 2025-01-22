@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import { JokesContext } from "@/context";
 
 import { JokeTransformed, SortOption } from "@/types";
@@ -13,57 +13,67 @@ interface JokesProviderProps {
 
 const JokesProvider = ({ children }: JokesProviderProps) => {
   const [jokes, setJokes] = useState<JokeTransformed[]>([]);
-  const [loading, setLoading] = useState(false);
 
-  const fetchJokes = async () => {
-    setLoading(true);
-    try {
-      const newJokes = await getJokes();
-      const jokesWithRatings = newJokes.map((joke: JokeTransformed) => {
-        const { rating, votes } = localJokesStore.getJokeRating(joke.id);
-        return { ...joke, rating, votes };
-      });
+  const applyStoredRatings = useCallback((jokesToUpdate: JokeTransformed[]) => {
+    return jokesToUpdate.map((joke) => {
+      const { rating, votes } = localJokesStore.getJokeRating(joke.id);
+      return { ...joke, rating, votes };
+    });
+  }, []);
+
+  const updateJokes = useCallback(
+    (newJokes: JokeTransformed[]) => {
+      const jokesWithRatings = applyStoredRatings(newJokes);
       setJokes(jokesWithRatings);
-    } catch (error) {
-      console.error("Failed to fetch jokes:", error);
-    }
-    setLoading(false);
+    },
+    [applyStoredRatings]
+  );
+
+  const fetchJokes = async ({
+    onDemand = false,
+  }: { onDemand?: boolean } = {}) => {
+    const newJokes = await getJokes({ onDemand });
+    updateJokes(newJokes);
+
+    return newJokes;
   };
 
-  const handleRate = (jokeId: string, rating: number) => {
+  const handleRate = useCallback((jokeId: string, rating: number) => {
     const { rating: newRating, votes } = localJokesStore.rateJoke(
       jokeId,
       rating
     );
-    setJokes(
-      jokes.map((joke) =>
+    setJokes((currentJokes) =>
+      currentJokes.map((joke) =>
         joke.id === jokeId ? { ...joke, rating: newRating, votes } : joke
       )
     );
-  };
+  }, []);
 
-  const sortedJokes = (sortBy: SortOption) =>
-    [...jokes].sort((a, b) => {
-      switch (sortBy) {
-        case "rating":
-          return (b.rating || 0) - (a.rating || 0);
-        case "votes":
-          return (b.votes || 0) - (a.votes || 0);
-        default:
-          return Number(b.id) - Number(a.id);
-      }
-    });
+  const sortedJokes = useCallback(
+    (sortBy: SortOption) =>
+      [...jokes].sort((a, b) => {
+        switch (sortBy) {
+          case "rating":
+            return (b.rating || 0) - (a.rating || 0);
+          case "votes":
+            return (b.votes || 0) - (a.votes || 0);
+          default:
+            return Number(b.id) - Number(a.id);
+        }
+      }),
+    [jokes]
+  );
 
   const value = useMemo(
     () => ({
       jokes,
-      loading,
       fetchJokes,
       handleRate,
-      setJokes,
+      setJokes: updateJokes,
       sortedJokes,
     }),
-    [jokes, loading]
+    [jokes, handleRate, updateJokes, sortedJokes]
   );
 
   return (

@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const JokeCardSkeleton = () => {
   return (
-    <Card className="overflow-hidden border-border/50 bg-card/95 shadow-lg backdrop-blur dark:bg-card/30 dark:shadow-md dark:shadow-primary/5">
+    <Card className="overflow-hidden border-border/50 bg-card/95 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:bg-background/40 dark:shadow-md dark:shadow-primary/5">
       <CardContent className="p-6">
         <div className="space-y-4">
           <div className="space-y-2">

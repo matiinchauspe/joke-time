@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import { getJokes } from "@/lib/api";
@@ -15,6 +16,11 @@ export default async function Home({
     [key: string]: string | string[] | undefined;
   };
 }) {
+  // Redirect to the URL with sort=newest if no sort parameter is provided
+  if (!searchParams.sort) {
+    redirect("/?sort=newest");
+  }
+
   const promise = getJokes();
 
   return (
@@ -25,7 +31,7 @@ export default async function Home({
           <div className="mt-4">
             <Suspense
               fallback={<GridSkeleton />}
-              key={JSON.stringify(searchParams)}
+              key={`${searchParams.sort}-${searchParams.page}-${Date.now()}`}
             >
               <Await promise={promise}>
                 {(jokes) => (

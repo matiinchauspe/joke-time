@@ -7,9 +7,11 @@ import { JokesProvider } from "./jokes-provider";
 
 const Providers = ({ children }: { children: ReactNode }) => {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <JokesProvider>{children}</JokesProvider>
-    </ThemeProvider>
+    <JokesProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        {children}
+      </ThemeProvider>
+    </JokesProvider>
   );
 };
 

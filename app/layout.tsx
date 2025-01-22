@@ -20,9 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={cn("relative h-full font-sans antialiased", inter.className)}
+        suppressHydrationWarning
       >
         <Providers>
           <Navbar />

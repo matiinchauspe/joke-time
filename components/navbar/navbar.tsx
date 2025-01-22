@@ -31,10 +31,16 @@ const Navbar = () => {
   const isScrolled = useIsScrolled();
   const { fetchJokes } = useJokes();
 
-  const sortBy = searchParams.get("sort") as SortOption;
+  const sortBy = (searchParams.get("sort") as SortOption) ?? "newest";
 
   const setSortBy = (value: SortOption) => {
-    router.push(`?sort=${value}`);
+    const params = new URLSearchParams(searchParams);
+    params.set("sort", value);
+    router.push(`?${params.toString()}`);
+  };
+
+  const handleFetchJokesOnDemand = () => {
+    fetchJokes({ onDemand: true });
   };
 
   return (
@@ -51,7 +57,7 @@ const Navbar = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
           <div className="flex items-center gap-2 sm:gap-4">
-            {/* Mobile: Dropdown Menu */}
+            {/* Mobile */}
             <div className="block sm:hidden">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -76,12 +82,9 @@ const Navbar = () => {
               </DropdownMenu>
             </div>
 
-            {/* Desktop: Select */}
+            {/* Desktop */}
             <div className="hidden sm:block">
-              <Select
-                value={sortBy}
-                onValueChange={(value: SortOption) => setSortBy(value)}
-              >
+              <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -94,7 +97,7 @@ const Navbar = () => {
             </div>
 
             <Button
-              onClick={fetchJokes}
+              onClick={handleFetchJokesOnDemand}
               variant="secondary"
               size="sm"
               className="sm:size-default"

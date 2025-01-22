@@ -17,7 +17,7 @@ interface JokesListProps {
 
 export function JokesList({ initialJokes, searchParams }: JokesListProps) {
   const router = useRouter();
-  const { setJokes, handleRate, loading, sortedJokes } = useJokes();
+  const { setJokes, handleRate, sortedJokes } = useJokes();
 
   const page = Number(searchParams.page ?? "1") - 1;
   const sortBy = (searchParams.sort as SortOption) ?? "newest";
