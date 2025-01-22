@@ -1,17 +1,22 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { FC, useEffect, useState } from "react";
-import { useJokes } from "@/context";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { SortOption } from "@/types";
 import { cn } from "@/lib/utils";
 import { useIsScrolled } from "@/hooks/use-is-scroll";
+import { useJokes } from "@/hooks/use-jokes";
 import { Icons } from "@/components/icons";
 import { MaxWidthWrapper } from "@/components/max-width-wrapper";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -38,31 +43,67 @@ const Navbar = () => {
         "border-b border-border": isScrolled,
       })}
     >
-      <MaxWidthWrapper className="max-w-screen-xl">
+      <MaxWidthWrapper className="max-w-screen-lg">
         <motion.div
-          className="flex items-center justify-between rounded-lg bg-card/80 p-4 backdrop-blur-lg"
+          className="flex items-center justify-between rounded-lg bg-card/80 p-3 backdrop-blur-lg sm:p-4"
           initial={{ y: -100 }}
           animate={{ y: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
-          <div className="flex items-center gap-4">
-            <Select
-              value={sortBy}
-              onValueChange={(value: SortOption) => setSortBy(value)}
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Mobile: Dropdown Menu */}
+            <div className="block sm:hidden">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Icons.Menu className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem onClick={() => setSortBy("newest")}>
+                    <Icons.Clock className="mr-2 h-4 w-4" />
+                    Newest
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("rating")}>
+                    <Icons.Star className="mr-2 h-4 w-4" />
+                    Highest Rated
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSortBy("votes")}>
+                    <Icons.Users className="mr-2 h-4 w-4" />
+                    Most Voted
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            {/* Desktop: Select */}
+            <div className="hidden sm:block">
+              <Select
+                value={sortBy}
+                onValueChange={(value: SortOption) => setSortBy(value)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest</SelectItem>
+                  <SelectItem value="rating">Highest Rated</SelectItem>
+                  <SelectItem value="votes">Most Voted</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button
+              onClick={fetchJokes}
+              variant="secondary"
+              size="sm"
+              className="sm:size-default"
             >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest</SelectItem>
-                <SelectItem value="rating">Highest Rated</SelectItem>
-                <SelectItem value="votes">Most Voted</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button onClick={fetchJokes} variant="secondary">
               <Icons.Refresh className="mr-2 h-4 w-4" />
-              New Jokes
+              <span className="hidden sm:inline">New Jokes</span>
+              <span className="sm:hidden">New</span>
             </Button>
+
             <AnimatePresence mode="wait">
               {isScrolled && (
                 <motion.div
@@ -83,7 +124,7 @@ const Navbar = () => {
                       duration: 0.2,
                     },
                   }}
-                  className="bg-gradient-to-r from-primary/90 to-primary-foreground/100 bg-clip-text text-2xl font-bold text-transparent"
+                  className="hidden bg-gradient-to-r from-primary/90 to-primary-foreground/100 bg-clip-text text-xl font-bold text-transparent sm:block sm:text-2xl"
                 >
                   JokeBox
                 </motion.div>

@@ -21,7 +21,10 @@ export default async function Home({
       <MaxWidthWrapper className="max-w-screen-lg">
         <div className="mt-20">
           <Header />
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense
+            fallback={<div>Loading...</div>}
+            key={JSON.stringify(searchParams)}
+          >
             <Await promise={promise}>
               {(jokes) => (
                 <JokesList initialJokes={jokes} searchParams={searchParams} />

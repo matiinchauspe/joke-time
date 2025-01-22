@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useJokes } from "@/context";
 
 import { JokeTransformed, SortOption } from "@/types";
+import { useJokes } from "@/hooks/use-jokes";
 import { Grid } from "@/components/grid";
 import { Pagination } from "@/components/pagination";
 
@@ -35,11 +35,7 @@ export function JokesList({ initialJokes, searchParams }: JokesListProps) {
 
   return (
     <div className="mt-4">
-      {loading ? (
-        <div className="py-8 text-center">Loading jokes...</div>
-      ) : (
-        <Grid data={paginatedJokes} onRate={handleRate} />
-      )}
+      <Grid data={paginatedJokes} onRate={handleRate} />
       <Pagination
         currentPage={page}
         totalPages={totalPages}

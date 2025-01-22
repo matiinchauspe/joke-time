@@ -1,29 +1,17 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
+import { JokesContext } from "@/context";
 
 import { JokeTransformed, SortOption } from "@/types";
 import { getJokes } from "@/lib/api";
 import { localJokesStore } from "@/store";
 
-interface JokesContextType {
-  jokes: JokeTransformed[];
-  loading: boolean;
-  fetchJokes: () => Promise<void>;
-  handleRate: (jokeId: string, rating: number) => void;
-  setJokes: (jokes: JokeTransformed[]) => void;
-  sortedJokes: (sortBy: SortOption) => JokeTransformed[];
-}
-
-export const JokesContext = createContext<JokesContextType>(
-  {} as JokesContextType
-);
-
 interface JokesProviderProps {
   children: ReactNode;
 }
 
-export const JokesProvider = ({ children }: JokesProviderProps) => {
+const JokesProvider = ({ children }: JokesProviderProps) => {
   const [jokes, setJokes] = useState<JokeTransformed[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -83,10 +71,4 @@ export const JokesProvider = ({ children }: JokesProviderProps) => {
   );
 };
 
-export const useJokes = () => {
-  const context = useContext(JokesContext);
-  if (!context) {
-    throw new Error("useJokes must be used within a JokesProvider");
-  }
-  return context;
-};
+export default JokesProvider;
