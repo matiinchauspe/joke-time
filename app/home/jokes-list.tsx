@@ -4,11 +4,10 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import { JokeTransformed, SortOption } from "@/types";
+import { ITEMS_PER_PAGE } from "@/lib/utils";
 import { useJokes } from "@/hooks/use-jokes";
 import { Grid } from "@/components/grid";
 import { Pagination } from "@/components/pagination";
-
-const ITEMS_PER_PAGE = 5;
 
 interface JokesListProps {
   initialJokes: JokeTransformed[];

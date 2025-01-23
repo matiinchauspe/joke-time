@@ -1,5 +1,6 @@
 import {
   ClockIcon,
+  Loader2Icon,
   MenuIcon,
   RefreshCwIcon,
   StarIcon,
@@ -13,4 +14,5 @@ export const Icons = {
   Menu: (props: LucideProps) => <MenuIcon {...props} />,
   Clock: (props: LucideProps) => <ClockIcon {...props} />,
   Users: (props: LucideProps) => <UsersIcon {...props} />,
+  Loader: (props: LucideProps) => <Loader2Icon {...props} />,
 };

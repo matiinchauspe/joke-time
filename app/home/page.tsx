@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import { getJokes } from "@/lib/api";
+import { ITEMS_PER_PAGE } from "@/lib/utils";
 import { Await } from "@/components/await";
 import GridSkeleton from "@/components/grid/grid-skeleton";
 import { Header } from "@/components/header";
@@ -30,7 +31,7 @@ export default async function Home({
           <Header />
           <div className="mt-4">
             <Suspense
-              fallback={<GridSkeleton />}
+              fallback={<GridSkeleton items={ITEMS_PER_PAGE} />}
               key={`${searchParams.sort}-${searchParams.page}-${Date.now()}`}
             >
               <Await promise={promise}>

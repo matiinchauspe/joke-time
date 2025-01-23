@@ -8,3 +8,5 @@ export function cn(...inputs: ClassValue[]) {
 export const getBaseUrl = () => {
   return process.env.NEXT_PUBLIC_API_URL ?? `http://localhost:3000`;
 };
+
+export const ITEMS_PER_PAGE = 5;

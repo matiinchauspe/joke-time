@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import { SortOption } from "@/types";
@@ -30,6 +31,7 @@ const Navbar = () => {
   const searchParams = useSearchParams();
   const isScrolled = useIsScrolled();
   const { fetchJokes } = useJokes();
+  const [isLoading, setIsLoading] = useState(false);
 
   const sortBy = (searchParams.get("sort") as SortOption) ?? "newest";
 
@@ -39,8 +41,13 @@ const Navbar = () => {
     router.push(`?${params.toString()}`);
   };
 
-  const handleFetchJokesOnDemand = () => {
-    fetchJokes({ onDemand: true });
+  const handleFetchJokesOnDemand = async () => {
+    try {
+      setIsLoading(true);
+      await fetchJokes({ onDemand: true });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -101,10 +108,21 @@ const Navbar = () => {
               variant="secondary"
               size="sm"
               className="sm:size-default"
+              disabled={isLoading}
             >
-              <Icons.Refresh className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">New Jokes</span>
-              <span className="sm:hidden">New</span>
+              {isLoading ? (
+                <>
+                  <Icons.Loader className="mr-2 h-4 w-4 animate-spin" />
+                  <span className="hidden sm:inline">Loading...</span>
+                  <span className="sm:hidden">...</span>
+                </>
+              ) : (
+                <>
+                  <Icons.Refresh className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">New Jokes</span>
+                  <span className="sm:hidden">New</span>
+                </>
+              )}
             </Button>
 
             <AnimatePresence mode="wait">
